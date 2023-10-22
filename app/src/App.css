@@ -44,3 +44,14 @@
 .recorder button {
   margin: 1em;
 }
+
+.audio-container {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1em;
+  align-items: center; /* 中央に配置する場合 */
+}
+
+.send-button {
+  margin-top: 10px; /* 必要に応じてマージンを調整 */
+}

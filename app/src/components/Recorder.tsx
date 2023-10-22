@@ -9,15 +9,34 @@ const Recorder: React.FC = () => {
   const chunksRef = useRef<BlobPart[]>([]);
 
   const startRecording = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    const mediaRecorder = new MediaRecorder(stream);
+
+    // const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const constraints = {
+      audio: {
+        echoCancellation: false,
+        noiseSuppression: false,
+        autoGainControl: false
+      }
+    };
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    
+    // const mediaRecorder = new MediaRecorder(stream);
+
+    // MIMEタイプのサポートをチェック
+    const mimeType = 'audio/mp4; codecs=mp4a.40.5';
+    if (!MediaRecorder.isTypeSupported(mimeType)) {
+        console.warn(`${mimeType} is not supported`);
+        // 必要に応じて他のMIMEタイプを試してみるか、デフォルトの設定を使用します。
+        return;
+    }
+    const mediaRecorder = new MediaRecorder(stream, { mimeType: mimeType }); 
 
     mediaRecorder.ondataavailable = (event) => {
       chunksRef.current.push(event.data);
     };
 
     mediaRecorder.onstop = () => {
-      const blob = new Blob(chunksRef.current, { type: 'audio/wav' });
+      const blob = new Blob(chunksRef.current, { type: mimeType });
       const url = URL.createObjectURL(blob);
       setAudioURL(url);
       chunksRef.current = [];
@@ -44,8 +63,11 @@ const Recorder: React.FC = () => {
         録音停止
       </button>
       {audioURL && (
-        <div>
+        <div className="audio-container">
           <audio ref={audioRef} controls src={audioURL}></audio>
+          <button>
+            結果を送る
+          </button>
         </div>
       )}
     </div>
