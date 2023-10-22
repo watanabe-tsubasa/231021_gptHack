@@ -1,5 +1,5 @@
 const Obniz = require("obniz");
-const obniz = new Obniz("2141-5182");
+const obniz = new Obniz("test");
 
 obniz.onconnect = async () => {
   console.log('connected');
