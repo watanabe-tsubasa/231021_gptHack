@@ -15,6 +15,7 @@ const config = {
   channelSecret: process.env.CHANNEL_SECRET || 'コピペ',
   channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN || 'コピペ'
 };
+const webhookURL = process.env.WEBHOOK_URL || 'コピペ';
 
 const client = new line.Client(config);
 
@@ -41,6 +42,7 @@ async function handleEvent(event) {
         text: '演奏を開始してください'
       })
     }
+
     await obnizHandler.powerOff()
     client.replyMessage(replyToken, {
       type: 'text',
@@ -51,8 +53,19 @@ async function handleEvent(event) {
     if (resultStr) {
       client.pushMessage(userId, {
         type: 'text',
-        text: arrayMapper(obnizHandler.result)
+        text: resultStr
       })
+      const res = await fetch(webhookURL, {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+        },
+        body: JSON.stringify({
+          result: resultStr
+        })
+      });
+      const text = await res.text();
+      console.log(text);
     } else {
       client.pushMessage(userId, {
         type: 'text',

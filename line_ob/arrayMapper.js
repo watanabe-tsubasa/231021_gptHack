@@ -5,6 +5,4 @@ const arrayMapper = (array) => {
   return mappedArray.join('\n')
 };
 
-console.log(arrayMapper([]))
-
 module.exports = { arrayMapper };
